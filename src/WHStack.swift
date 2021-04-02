@@ -2,40 +2,45 @@ import SwiftUI
 
 public struct WHStack: View {
   
-  @usableFromInline var alignment: VerticalAlignment = .center
-  @usableFromInline var spacing: CGFloat = 0
-  @usableFromInline let content: [AnyView]
-  @State private var height: CGFloat = 0
-  
-  @usableFromInline init(_ alignment: VerticalAlignment?, _ spacing: CGFloat?, _ content: [AnyView]) {
-    if let alignment = alignment {
-      self.alignment = alignment
-    }
-    if let spacing = spacing {
-      self.spacing = spacing
-    }
-    self.content = content
+@usableFromInline var verticalAlignment: VerticalAlignment = .center
+@usableFromInline var horizontalAlignment: HorizontalAlignment = .leading
+@usableFromInline var spacing: CGFloat = 0
+@usableFromInline let content: [AnyView]
+@State private var height: CGFloat = 0
+
+@usableFromInline init(_ verticalAlignment: VerticalAlignment?, _ horizontalAlignment: HorizontalAlignment?, _ spacing: CGFloat?, _ content: [AnyView]) {
+  if let verticalAlignment = verticalAlignment {
+    self.verticalAlignment = verticalAlignment
   }
+  if let horizontalAlignment = horizontalAlignment {
+    self.horizontalAlignment = horizontalAlignment
+  }
+  if let spacing = spacing {
+    self.spacing = spacing
+  }
+  self.content = content
+}
 
   // Work-around for https://bugs.swift.org/browse/SR-11628
-@inlinable public init<Content: View>(alignment: VerticalAlignment? = nil, spacing: CGFloat? = nil, content: () -> Content) {
-    self.init(alignment, spacing, [AnyView(content())])
+@inlinable public init<Content: View>(verticalAlignment: VerticalAlignment? = nil, horizontalAlignment: HorizontalAlignment? = nil, spacing: CGFloat? = nil, content: () -> Content) {
+    self.init(verticalAlignment, horizontalAlignment, spacing, [AnyView(content())])
   }
 
-  @inlinable public init<Content: View>(alignment: VerticalAlignment? = nil, spacing: CGFloat? = nil, content: () -> [Content]) {
-    self.init(alignment, spacing, content().map { AnyView($0) })
+  @inlinable public init<Content: View>(verticalAlignment: VerticalAlignment? = nil, horizontalAlignment: HorizontalAlignment? = nil, spacing: CGFloat? = nil, content: () -> [Content]) {
+    self.init(verticalAlignment, horizontalAlignment, spacing, content().map { AnyView($0) })
   }
   
   // Known issue: https://bugs.swift.org/browse/SR-11628
-  @inlinable public init(alignment: VerticalAlignment? = nil, spacing: CGFloat? = nil, @ViewArrayBuilder content: () -> [AnyView]) {
-    self.init(alignment, spacing, content())
+  @inlinable public init(verticalAlignment: VerticalAlignment? = nil, horizontalAlignment: HorizontalAlignment? = nil, spacing: CGFloat? = nil, @ViewArrayBuilder content: () -> [AnyView]) {
+    self.init(verticalAlignment, horizontalAlignment, spacing, content())
   }
   
   public var body: some View {
     GeometryReader { p in
       WrapStack (
         width: p.frame(in: .global).width,
-        verticalAlignment: self.alignment,
+        verticalAlignment: self.verticalAlignment,
+        horizontalAlignment: self.horizontalAlignment,
         spacing: self.spacing,
         content: self.content
       )
@@ -164,7 +169,7 @@ struct WHStack_Previews: PreviewProvider {
         
         
         Group {
-          WHStack(alignment: .bottom, spacing: 10) {[
+          WHStack(verticalAlignment: .bottom, spacing: 10) {[
             Color.red.frame(width: 100, height: 50),
             Color.gray.frame(width: 80, height: 50),
             Color.green.frame(width: 150, height: 30),
