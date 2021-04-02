@@ -59,7 +59,7 @@ struct WrapStack<Content: View>: View {
         self.content[$0]
       }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
+    .frame(maxWidth: .infinity, alignment: .init(horizintal: horizontalAlignment, vertical: verticalAlignment))
     //.clipped()
   }
 
